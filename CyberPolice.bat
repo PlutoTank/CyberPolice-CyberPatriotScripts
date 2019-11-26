@@ -21,6 +21,9 @@ set powershellPath=%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe
 set wmicPath=%SystemRoot%\System32\Wbem\wmic.exe
 set lgpo=%toolsPath%/LGPO.exe
 
+echo CYBER POLICE are making required directories...
+if not exist "%output%\WindowsFeatures" mkdir "%output%\WindowsFeatures"
+
 set lspEditOs = "Windows10"
 
 echo %path%CyberPoliceOutput>%output%\path.txt
@@ -410,6 +413,7 @@ if /i "%aus%" neq "Y" goto:EOF
 call:colorEcho 0b "Running %~1..."
 echo.
 start %~1 /wait
+echo.
 goto:EOF
 
 :colorEcho
