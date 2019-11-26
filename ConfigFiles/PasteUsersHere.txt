@@ -1,0 +1,20 @@
+Authorized Administrators:
+bwayne (you)
+	password: !@mBatM@n!
+jgordon
+	password: BaRbr@
+apennyworth
+	password: WayN3$
+tdrake
+	password: T1tANsGo!
+bgordon
+	password: password
+Authorized Users:
+hbullock
+lfox
+harold
+hstrange
+jtodd
+twayne
+dwayne
+skyle
