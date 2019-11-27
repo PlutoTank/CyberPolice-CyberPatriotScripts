@@ -381,7 +381,8 @@ goto:EOF
 :userMgmtff
 %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/ManageUsersFromFile.ps1"
 echo Finding current users...
-set uOutDir = "%output%\ManagedUserOutput"
+set uOutDir=%output%\ManagedUserOutput
+break>"!uOutDir!\enabledUsers.txt"
 for /f "tokens=*" %%A in (%output%\users.txt) do (
 	for /f "tokens=3 delims= " %%B in ('%net% user "%%A" ^| Find "active"') do set userStatus=%%B
 	if "!userStatus!"=="No" (
@@ -394,8 +395,49 @@ for /f "tokens=*" %%A in (%output%\users.txt) do (
 		call:colorEcho 07 " account is"
 		call:colorEcho 0b " Enabled"
 		echo.
+		echo %%A>>!uOutDir!\enabledUsers.txt
 	 )
+)
+for /f "tokens=*" %%A in (!uOutDir!\authAdmins.txt) do (
+	for /f "tokens=1 delims=:" %%C in (%%A) do set user=%%C
+	set user=!user::=!
+	echo !user!
 	pause
+	for /f "tokens=2 delims=:" %%C in (%%A) do set pass=%%C
+	for /f "tokens=*" %%B in (!uOutDir!\enabledUsers.txt) do (
+		echo !user!
+		if "!user!"=="%%B" (
+			call:colorEcho 0b "!user!"
+			call:colorEcho 0a " admin found"
+			echo.
+			call:colorEcho 07 "Giving"
+			call:colorEcho 0b " !user!"
+			call:colorEcho 07 " password"
+			call:colorEcho 0b " !pass!"
+			echo.
+			net user !user! !pass!
+			call:colorEcho 07 "Making"
+			call:colorEcho 0b " !user!"
+			call:colorEcho 07 " admin"
+			echo.
+			%net% localgroup "Administrators" "!user!" /add
+		) else (
+			call:colorEcho 0b "!user!"
+			call:colorEcho 0c " admin not found"
+			echo.
+			call:colorEcho 07 "Creating"
+			call:colorEcho 0b " !user!"
+			call:colorEcho 07 " with password"
+			call:colorEcho 0b " !pass!"
+			echo.
+			%net% user "!user!" "!pass!" /add
+			call:colorEcho 07 "Making"
+			call:colorEcho 0b " !user!"
+			call:colorEcho 07 " admin"
+			echo.
+			%net% localgroup "Administrators" "!user!" /add
+		)
+	)
 )
 pause
 goto:EOF
