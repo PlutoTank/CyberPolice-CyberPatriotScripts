@@ -2,7 +2,7 @@
 
 SETLOCAL EnableDelayedExpansion
 
-set functions=checkfiles services lsp backuplsp passwordPol audit lockout features
+set functions=checkfiles services lsp backuplsp passwordPol audit lockout features userMgmtff
 
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (
   set "DEL=%%a"
@@ -16,9 +16,11 @@ set output=%path%CyberPoliceOutput
 set powershellScriptPath=%path%PowershellScripts
 set configPath=%path%ConfigFiles
 set toolsPath=%path%Tools
+set batchScripts=%path%BatchScripts
 
 set powershellPath=%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe
 set wmicPath=%SystemRoot%\System32\Wbem\wmic.exe
+set net=%SystemRoot%\system32\net.exe
 set lgpo=%toolsPath%/LGPO.exe
 
 echo CYBER POLICE are making required directories...
@@ -376,7 +378,27 @@ call:colorEcho 0a "CYBER POLICE are done finding bad Windows features"
 echo.
 goto:EOF
 
-:userMgmt
+:userMgmtff
+%powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/ManageUsersFromFile.ps1"
+echo Finding current users...
+set uOutDir = "%output%\ManagedUserOutput"
+for /f "tokens=*" %%A in (%output%\users.txt) do (
+	for /f "tokens=3 delims= " %%B in ('%net% user "%%A" ^| Find "active"') do set userStatus=%%B
+	if "!userStatus!"=="No" (
+		call:colorEcho 0b "%%A"
+		call:colorEcho 07 " account is"
+		call:colorEcho 0b " Disabled"
+		echo.
+	 ) else (
+		call:colorEcho 0b "%%A"
+		call:colorEcho 07 " account is"
+		call:colorEcho 0b " Enabled"
+		echo.
+	 )
+	pause
+)
+pause
+goto:EOF
 rem set user properties, set user passwords (use copy paste from README), add users (based on README), disable users (based on README), set user groups, disable admin and guest and rename
 
 :rdp
@@ -394,9 +416,6 @@ call:colorEcho 0e "This will take a while, get a snack..."
 sfc /verifyonly
 call:colorEcho 0a "CYBER POLICE are finally done"
 goto:EOF
-
-:virusScan
-rem run CYBER POLICE virus scan
 
 :checkHosts
 rem back up and show HOSTS file then flush dns

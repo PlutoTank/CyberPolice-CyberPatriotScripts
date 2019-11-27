@@ -14,6 +14,6 @@ if (!(Test-Path "$path2/users.txt"))
 
 Clear-content "$path2\users.txt"
 foreach($l in $accounts){
-	"User: $l" >> "$path2\users.txt";
+   Add-Content -Path $path2\users.txt -Value $l -PassThru
 }
 Write-Host "Users added to text file!" -ForegroundColor Yellow;
