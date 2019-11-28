@@ -80,7 +80,7 @@ function BeginUserManagement {
         }
     }
     for ($i = 0; $i -lt $admins.count; $i++) {
-        Add-Content $output\ManagedUserOutput\authAdmins.txt "$($admins[$i]):$($adminPasswords[$i])"
+        Add-Content $output\ManagedUserOutput\authAdmins.txt "$($admins[$i]) $($adminPasswords[$i])"
         Write-Host "Admin: " -ForegroundColor Gray -NoNewline
         Write-Host $admins[$i] -ForegroundColor Cyan -NoNewline
         Write-Host " Password: " -ForegroundColor Gray -NoNewline

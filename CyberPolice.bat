@@ -23,6 +23,12 @@ set wmicPath=%SystemRoot%\System32\Wbem\wmic.exe
 set net=%SystemRoot%\system32\net.exe
 set lgpo=%toolsPath%/LGPO.exe
 
+for /f "tokens=*" %%A in (%configPath%\DefaultPassword.txt) do (
+	setlocal DisableDelayedExpansion
+	set "password=%%A"
+	setlocal enabledelayedexpansion
+) 
+
 echo CYBER POLICE are making required directories...
 if not exist "%output%\WindowsFeatures" mkdir "%output%\WindowsFeatures"
 
@@ -378,7 +384,7 @@ call:colorEcho 0a "CYBER POLICE are done finding bad Windows features"
 echo.
 goto:EOF
 
-:userMgmtff
+:userMgmtff 
 %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/ManageUsersFromFile.ps1"
 echo Finding current users...
 set uOutDir=%output%\ManagedUserOutput
@@ -398,48 +404,183 @@ for /f "tokens=*" %%A in (%output%\users.txt) do (
 		echo %%A>>!uOutDir!\enabledUsers.txt
 	 )
 )
-for /f "tokens=*" %%A in (!uOutDir!\authAdmins.txt) do (
-	for /f "tokens=1 delims=:" %%C in (%%A) do set user=%%C
-	set user=!user::=!
-	echo !user!
-	pause
-	for /f "tokens=2 delims=:" %%C in (%%A) do set pass=%%C
-	for /f "tokens=*" %%B in (!uOutDir!\enabledUsers.txt) do (
-		echo !user!
-		if "!user!"=="%%B" (
-			call:colorEcho 0b "!user!"
-			call:colorEcho 0a " admin found"
+echo.
+echo The CYBER POLICE are now applying admins...
+setlocal DisableDelayedExpansion
+for /f "tokens=*" %%A in (%uOutDir%\authAdmins.txt) do (
+	set "line=%%A"
+	setlocal enabledelayedexpansion
+	for /f "tokens=1 delims= " %%C in ("!line!") do (
+		setlocal DisableDelayedExpansion
+		set "user=%%C"
+	)
+	setlocal enabledelayedexpansion
+	for /f "tokens=2 delims= " %%C in ("!line!") do (
+		setlocal DisableDelayedExpansion
+		set "pass=%%C"
+	)
+	setlocal enabledelayedexpansion
+	call:checkusersadmin !user! !pass!
+)
+echo The CYBER POLICE are now applying users...
+for /f "tokens=* delims=" %%A in (%uOutDir%\authUsers.txt) do (
+	call:checkusers %%A !password!
+)
+echo CYBER POLICE are checking users...
+for /f "tokens=*" %%A in (%uOutDir%\enabledUsers.txt) do (
+	call:checkcurrusers %%A
+)
+%powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/UserList.ps1"
+goto:EOF
+
+:checkcurrusers
+setlocal DisableDelayedExpansion
+for /f "tokens=* delims=" %%B in (%uOutDir%\authAdmins.txt) do (
+	set "line=%%B"
+	setlocal enabledelayedexpansion
+	for /f "tokens=1 delims= " %%C in ("!line!") do (
+		setlocal DisableDelayedExpansion
+		set "userChk=%%C"
+		setlocal enabledelayedexpansion
+		if "%~1"=="!userChk!" (
+			call:colorEcho 0b "%~1"
+			call:colorEcho 0a " found"
 			echo.
-			call:colorEcho 07 "Giving"
-			call:colorEcho 0b " !user!"
-			call:colorEcho 07 " password"
-			call:colorEcho 0b " !pass!"
-			echo.
-			net user !user! !pass!
-			call:colorEcho 07 "Making"
-			call:colorEcho 0b " !user!"
-			call:colorEcho 07 " admin"
-			echo.
-			%net% localgroup "Administrators" "!user!" /add
-		) else (
-			call:colorEcho 0b "!user!"
-			call:colorEcho 0c " admin not found"
-			echo.
-			call:colorEcho 07 "Creating"
-			call:colorEcho 0b " !user!"
-			call:colorEcho 07 " with password"
-			call:colorEcho 0b " !pass!"
-			echo.
-			%net% user "!user!" "!pass!" /add
-			call:colorEcho 07 "Making"
-			call:colorEcho 0b " !user!"
-			call:colorEcho 07 " admin"
-			echo.
-			%net% localgroup "Administrators" "!user!" /add
+			goto:EOF
 		)
 	)
 )
-pause
+for /f "tokens=* delims=" %%D in (%uOutDir%\authUsers.txt) do (
+	set userChk=%%D
+	if "%~1"=="!userChk!" (
+		call:colorEcho 0b "%~1"
+		call:colorEcho 0a " found"
+		echo.
+		goto:EOF
+	)
+)
+
+call:colorEcho 0b "%~1"
+call:colorEcho 0c " not found"
+echo.
+call:colorEcho 0e "Disabling"
+call:colorEcho 0b " %~1"
+echo.
+net user %~1 /active:no
+goto:EOF
+
+:checkusersadmin
+setlocal DisableDelayedExpansion
+set "user=%~1"
+set "pass=%~2"
+setlocal enabledelayedexpansion
+for /f "tokens=*" %%B in (!uOutDir!\enabledUsers.txt) do (
+	if "!user!"=="%%B" (
+		call:colorEcho 0b "!user!"
+		call:colorEcho 0a " admin found"
+		echo.
+		call:colorEcho 07 "Giving"
+		call:colorEcho 0b " !user!"
+		call:colorEcho 07 " password"
+		%powershellPath% Write-Host -Foregroundcolor Gray -NoNewLine ": "
+		%powershellPath% Write-Host -Foregroundcolor Cyan "!pass!"
+		net user !user! !pass!
+		if %ERRORLEVEL% neq 0 (
+			call:userError !user!
+		)
+		if %ERRORLEVEL% neq 0 pause
+		call:colorEcho 07 "Managing"
+		call:colorEcho 0b " !user!"
+		call:colorEcho 07 " admin"
+		echo.
+		%net% localgroup "Administrators" "!user!" /add
+		goto:EOF
+	) 
+)
+call:colorEcho 0b "!user!"
+call:colorEcho 0c " admin not found"
+echo.
+call:colorEcho 07 "Creating"
+call:colorEcho 0b " !user!"
+call:colorEcho 07 " and giving password"
+%powershellPath% Write-Host -Foregroundcolor Gray -NoNewLine ": "
+%powershellPath% Write-Host -Foregroundcolor Cyan "!pass!"
+%net% user "!user!" "!pass!" /add
+if %ERRORLEVEL% neq 0 (
+	call:userError !user!
+)
+call:colorEcho 07 "Managing"
+call:colorEcho 0b " !user!"
+call:colorEcho 07 " admin"
+echo.
+%net% localgroup "Administrators" "!user!" /add
+goto:EOF
+
+:checkusers
+setlocal DisableDelayedExpansion
+set "user=%~1"
+set "pass=%~2"
+setlocal enabledelayedexpansion
+for /f "tokens=*" %%B in (!uOutDir!\enabledUsers.txt) do (
+	if "!user!"=="%%B" (
+		call:colorEcho 0b "!user!"
+		call:colorEcho 0a " found"
+		echo.
+		call:colorEcho 07 "Giving"
+		call:colorEcho 0b " !user!"
+		call:colorEcho 07 " password"
+		%powershellPath% Write-Host -Foregroundcolor Gray -NoNewLine ": "
+		%powershellPath% Write-Host -Foregroundcolor Cyan "!pass!"
+		net user !user! !pass! 
+		call:colorEcho 07 "Managing"
+		call:colorEcho 0b " !user!"
+		call:colorEcho 07 " user"
+		echo.
+		%net% localgroup "Users" "!user!" /add
+		%net% localgroup "Administrators" "!user!" /delete
+		goto:EOF
+	) 
+)
+call:colorEcho 0b "!user!"
+call:colorEcho 0c " not found"
+echo.
+call:colorEcho 07 "Creating"
+call:colorEcho 0b " !user!"
+call:colorEcho 07 " with password"
+%powershellPath% Write-Host -Foregroundcolor Gray -NoNewLine ": "
+%powershellPath% Write-Host -Foregroundcolor Cyan "!pass!"
+echo.
+%net% user "!user!" "!pass!" /add 
+call:colorEcho 07 "Managing"
+call:colorEcho 0b " !user!"
+call:colorEcho 07 " user"
+echo.
+%net% localgroup "Users" "!user!" /add
+%net% localgroup "Administrators" "!user!" /delete
+goto:EOF
+
+:userError
+call:colorEcho 0c "Looks like there was an error configuring"
+call:colorEcho 0b " %~1"
+echo.
+call:colorEcho 0e "it could be a password problem..."
+echo.
+call:colorEcho 0e "Change thier password to a default password, user might not be created if No (Default is Yes)"
+echo.
+set /p aus="[Y/N]: "
+if /i "%aus%" neq "N" (
+	call:colorEcho 07 "Current default password"
+	%powershellPath% Write-Host -Foregroundcolor Gray -NoNewLine ": "
+	%powershellPath% Write-Host -Foregroundcolor Cyan "!password!" 
+	echo.
+	%net% user "%~1" "!password!" /add
+
+) else (
+	call:colorEcho 0b "%~1"
+	call:colorEcho 0c " was not created"
+	echo.
+)
+%net% user %~1 /active:yes
 goto:EOF
 rem set user properties, set user passwords (use copy paste from README), add users (based on README), disable users (based on README), set user groups, disable admin and guest and rename
 
