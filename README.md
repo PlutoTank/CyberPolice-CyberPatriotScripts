@@ -8,7 +8,7 @@ This script was made for Cyber Patriot competition but can be used for other use
 Run `CyberPolice.bat` as Administrator
 
 #### Functions
-```checkfiles```\
+```checkfiles``` Gamer\
 ```usermgmtff```\
 ```userprop```\
 ```services```\
@@ -27,7 +27,7 @@ Run `CyberPolice.bat` as Administrator
 ```lsp```\
 ```regharden```\
 ```verifysys```\
-```auto```\
+```auto```
 
 ### Tested OS'
 | Windows Version   | Tested        | 
@@ -48,6 +48,6 @@ Run `CyberPolice.bat` as Administrator
 Some config files allow for commenting with `#` as the first line\
 Files that allow for commenting:\
 ```RegistryHardenData.txt```\
-```FirewallRulesOFF```\
+```FirewallRulesOFF.txt```
 
 Most config files you just put the name of the object you want to change in the text file that applies to that object
