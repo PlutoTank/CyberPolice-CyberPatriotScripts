@@ -1,0 +1,53 @@
+# auto update keys
+HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU:AutoInstallMinorUpdates:REG_DWORD:1
+HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU:NoAutoUpdate:REG_DWORD:0
+HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate\AU:AUOptions:REG_DWORD:4
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\WindowsUpdate\Auto Update:AUOptions:REG_DWORD:4
+HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate:DisableWindowsUpdateAccess:REG_DWORD:0
+HKLM\SOFTWARE\Policies\Microsoft\Windows\WindowsUpdate:ElevateNonAdmins:REG_DWORD:0
+HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer:NoWindowsUpdate:REG_DWORD:0
+HKLM\SYSTEM\Internet Communication Management\Internet Communication:DisableWindowsUpdateAccess:REG_DWORD:0
+HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\WindowsUpdate:DisableWindowsUpdateAccess:REG_DWORD:0
+# Restrict CD drive
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon:AllocateCDRoms:REG_DWORD:1
+# No remote floppy
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon:AutoAdminLogon:REG_DWORD:1
+# no auto admin login
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon:AutoAdminLogon:REG_DWORD:0
+# clear page file on shut down (adds some slowdown to shut down)
+HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management:ClearPageFileAtShutdown:REG_DWORD:1
+# no printer drivers
+HKLM\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers:AddPrinterDrivers:REG_DWORD:1
+# audit lsass.exe
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\LSASS.exe:AuditLevel:REG_DWORD:00000008
+# LSA protec
+HKLM\SYSTEM\CurrentControlSet\Control\Lsa:RunAsPPL:REG_DWORD:00000001
+# no blank passwords
+HKLM\SYSTEM\CurrentControlSet\Control\Lsa:LimitBlankPasswordUse:REG_DWORD:1
+# enable smartscreen old
+HKCU\Software\Microsoft\Internet Explorer\PhishingFilter:EnabledV8:REG_DWORD:1
+# enable smartscreen new
+HKCU\Software\Microsoft\Internet Explorer\PhishingFilter:EnabledV9:REG_DWORD:1
+# IE no cache passwords
+HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings:DisablePasswordCaching:REG_DWORD:1
+# check for bad certificate (warn)
+HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings:WarnonBadCertRecving:REG_DWORD:1
+# IE warn for redirect
+HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings:WarnOnPostRedirect:REG_DWORD:1
+# do not track me
+HKCU\Software\Microsoft\Internet Explorer\Main:DoNotTrack:REG_DWORD:1
+HKCU\Software\Microsoft\Internet Explorer\Download:RunInvalidSignatures:REG_DWORD:1
+HKCU\Software\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_LOCALMACHINE_LOCKDOWN\Settings:LOCALMACHINE_CD_UNLOCK:REG_DWORD:1
+HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings:WarnonZoneCrossing:REG_DWORD:1
+# show hidden files
+HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced:Hidden:REG_DWORD:1
+# disable sticky keys
+HKU\.DEFAULT\Control Panel\Accessibility\StickyKeys:Flags:REG_DWORD:506
+# show SUPER hidden files (epic)
+HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Advanced:ShowSuperHidden:REG_DWORD:1
+# no dump files
+HKLM\SYSTEM\CurrentControlSet\Control\CrashControl:CrashDumpEnabled:REG_DWORD:0
+# disable autorun
+HKCU\SYSTEM\CurrentControlSet\Services\CDROM:AutoRun:REG_DWORD:1
+# clear null session pipes
+HKLM\SYSTEM\CurrentControlSet\services\LanmanServer\Parameters:NullSessionPipes:REG_MULTI_SZ:

@@ -2,7 +2,7 @@
 
 SETLOCAL EnableDelayedExpansion
 
-set functions=checkfiles services lsp backuplsp passwordPol audit lockout features userMgmtff
+set functions=checkfiles usermgmtff userprop services firewall features passwordPol audit lockout rdp power sessions shares checkdns uac backuplsp lsp regharden verifysys
 
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (
   set "DEL=%%a"
@@ -22,6 +22,8 @@ set powershellPath=%SYSTEMROOT%\System32\WindowsPowerShell\v1.0\powershell.exe
 set wmicPath=%SystemRoot%\System32\Wbem\wmic.exe
 set net=%SystemRoot%\system32\net.exe
 set lgpo=%toolsPath%/LGPO.exe
+
+set you=%username%
 
 for /f "tokens=*" %%A in (%configPath%\DefaultPassword.txt) do (
 	setlocal DisableDelayedExpansion
@@ -87,6 +89,10 @@ call:colorEcho 0b " as host's CPU architecture"
 echo.
 echo %proArc%>%output%\"CPUARCHITECTURE.txt"
 
+call:colorEcho 0b "Running as user"
+call:colorEcho 0a " %you%"
+echo.
+
 set dism=%toolsPath%\DISM%proArc%\DISM\dism.exe
 
 %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/CreateRestorePoint.ps1"
@@ -98,16 +104,37 @@ echo.
 echo Press any key to begin CYBER POLICE OPS...
 pause>nul
 
+echo.
+call:colorEcho 0e "Do you want [A]uto or [M]anual (Default is [M]anual)"
+echo.
+set /p aus="[A/M]: "
+if /i "%aus%" neq "A" goto:manual
+goto:auto
+
+:auto
+for %%A in (%functions%) do call:autoCheck %%A
+call :colorEcho 0a "The CYBER POLICE have finished running auto"
+echo.
+echo Press any key to switch to manual...
+pause>nul
+goto:manual
+
+:autoCheck
+if "%~1"=="backuplsp" (
+	goto:EOF	
+)
+call:%~1
+goto:EOF
 :manual
 
 echo.
-call :colorEcho 0f "Type"
+call :colorEcho 07 "Type"
 call:colorEcho 0b " exit"
-call :colorEcho 0f " to"
+call :colorEcho 07 " to"
 call:colorEcho 0c " exit"
-call :colorEcho 0f " and"
+call :colorEcho 07 " and"
 call:colorEcho 0b " help"
-call :colorEcho 0f " for"
+call :colorEcho 07 " for"
 call :colorEcho 0a " help"
 echo.
 
@@ -334,10 +361,48 @@ if /i "%aus%" == "Y" (
 goto:EOF
 
 :firewall
-rem harden firewall
+echo The CYBER POLICE will now try to enable the firewall...
+netsh advfirewall set allprofiles state on
+call:colorEcho 0a "The CYBER POLICE have enabled the firewall"
+echo.
+echo The CYBER POLICE will now do some basic firewall hardening...
+for /f "tokens=*" %%A in (%configPath%\FirewallRulesOFF.txt) do (
+	set comCheck=%%%A:~0,1%
+	if "!comCheck!" neq "#" (
+		netsh advfirewall firewall set rule name="%%A" new enable=no 
+	)
+)
+call:colorEcho 0a "The CYBER POLICE finished basic firewall hardening"
+echo.
+call:manualVerify wf.msc
+goto:EOF
 
-:regHarden
-rem harden and set secure registy values
+:regharden
+echo The CYBER POLICE will do some system hardening through the registry...
+for /f "tokens=*" %%A in (%configPath%\RegistyHardenData.txt) do (
+	endlocal & set "regLine=%%A"
+	set comCheck=!regLine:~0,1!
+	if "!comCheck!" neq "#" (
+		for /f "tokens=1,2,3,4 delims=:" %%G in ("!regLine!") do (
+			set regPath=%%G
+			set regKey=%%H
+			set regType=%%I
+			set regVal=%%J
+		)
+		echo "Editing registry path !regPath!"
+		call:colorEcho 07 "Editing key"
+		call:colorEcho 0b " !regKey!"
+		echo.
+		call:colorEcho 07 "Editing variable type"
+		call:colorEcho 0d " !regType!"
+		echo.
+		call:colorEcho 07 "Applying value"
+		call:colorEcho 0a " !regVal!"
+		echo.
+		reg add "!regPath!" /v !regKey! /t !regType! /d !regVal! /f
+	)
+)
+goto:EOF
 
 :groupPol
 rem set a secure group policy
@@ -345,8 +410,22 @@ rem set a secure group policy
 :eventview
 rem filter and find sketchy events in event viewer
 
-:userRights
-rem set user rights
+:userprop
+for /f "tokens=*" %%A in (%output%\users.txt) do (
+	if "%%A" neq "%you%" (
+		echo.
+		%wmicPath% UserAccount where Name='%%A' set PasswordExpires=True
+		%wmicPath%  UserAccount where Name='%%A' set PasswordChangeable=True
+		%wmicPath%  UserAccount where Name='%%A' set PasswordRequired=True
+		%net% user %%A /logonpasswordchg:yes
+		call:colorEcho 0a "Properties for"
+		call:colorEcho 0b " %%A"
+		call:colorEcho 0a " were changed"
+		echo.
+	) 
+)
+call:manualVerify lusrmgr.msc
+goto:EOF
 
 :features
 set wfOutput=%output%\WindowsFeatures
@@ -384,7 +463,7 @@ call:colorEcho 0a "CYBER POLICE are done finding bad Windows features"
 echo.
 goto:EOF
 
-:userMgmtff 
+:usermgmtff 
 %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/ManageUsersFromFile.ps1"
 echo Finding current users...
 set uOutDir=%output%\ManagedUserOutput
@@ -431,6 +510,7 @@ for /f "tokens=*" %%A in (%uOutDir%\enabledUsers.txt) do (
 	call:checkcurrusers %%A
 )
 %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/UserList.ps1"
+call:manualVerify lusrmgr.msc
 goto:EOF
 
 :checkcurrusers
@@ -488,7 +568,6 @@ for /f "tokens=*" %%B in (!uOutDir!\enabledUsers.txt) do (
 		if %ERRORLEVEL% neq 0 (
 			call:userError !user!
 		)
-		if %ERRORLEVEL% neq 0 pause
 		call:colorEcho 07 "Managing"
 		call:colorEcho 0b " !user!"
 		call:colorEcho 07 " admin"
@@ -582,26 +661,106 @@ if /i "%aus%" neq "N" (
 )
 %net% user %~1 /active:yes
 goto:EOF
-rem set user properties, set user passwords (use copy paste from README), add users (based on README), disable users (based on README), set user groups, disable admin and guest and rename
+
+:sessions
+echo The CYBER POLICE will display connected remote sessions
+net session
+net session > %output%/CurrentRemoteSessions.txt
+call:colorEcho 0a "Sessions are done showing"
+echo.
+goto:EOF
 
 :rdp
-rem ask if user wants remote desktop enabled, do stuff
+echo The CYBER POLICE will manage Remote Desktop...
+call:colorEcho 0e "Enable remote desktop (Default will loop back)"
+echo.
+set /p rdpChk="[Y/N]:"
+if %rdpChk%==y (
+	echo Enabling remote desktop...
+	reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v AllowTSConnections /t REG_DWORD /d 1 /f
+	reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fAllowToGetHelp /t REG_DWORD /d 1 /f
+	reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v UserAuthentication /t REG_DWORD /d 1 /f
+	REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
+	netsh advfirewall firewall set rule group="remote desktop" new enable=yes
+	echo Please select "Allow connections only from computers running Remote Desktop with Network Level Authentication (more secure)"
+	start SystemPropertiesRemote.exe /wait
+	call:colorEcho 0a "The CYBER POLICE enabled RDP"
+	echo.
+	goto:EOF
+)
+if %rdpChk%==n (
+	echo Disabling remote desktop...
+	reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 1 /f
+	reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v AllowTSConnections /t REG_DWORD /d 0 /f
+	reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fAllowToGetHelp /t REG_DWORD /d 0 /f
+	reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v UserAuthentication /t REG_DWORD /d 0 /f
+	netsh advfirewall firewall set rule group="remote desktop" new enable=no
+	call:colorEcho 0a "The CYBER POLICE disabled RDP"
+	echo.
+	goto:EOF
+)
+call:colorEcho 0c "Invalid input"
+call:colorEcho 0b " %rdpChk%"
+echo.
+goto rdp
 
 :secRDP
 rem secure rdp
 
-:autoUpdate
-rem turn on auto update
+:power
+echo the CYBER POLICE are setting power settings...
+powercfg -SETDCVALUEINDEX SCHEME_BALANCED SUB_NONE CONSOLELOCK 1
+powercfg -SETDCVALUEINDEX SCHEME_MIN SUB_NONE CONSOLELOCK 1
+powercfg -SETDCVALUEINDEX SCHEME_MAX SUB_NONE CONSOLELOCK 1
+call:colorEcho 0a "The CYBER POLICE set power settings"
+echo.
+goto:EOF
 
-:verifySys
+:shares
+echo The CYBER POLICE are logging shares...
+net share
+net share > %output%\shares.txt
+call:colorEcho 0a "Shares have been logged"
+echo.
+call:manualVerify fsmgmt.msc
+goto:EOF
+
+:uac
+echo The CYBER POLICE are enabling UAC...
+reg ADD HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System /v EnableLUA /t REG_DWORD /d 1 /f
+call:colorEcho 0a "The CYBER POLICE have enabled UAC"
+echo.
+goto:EOF
+
+:verifysys
 echo "CYBER POLICE are verifying system files..."
 call:colorEcho 0e "This will take a while, get a snack..."
 sfc /verifyonly
 call:colorEcho 0a "CYBER POLICE are finally done"
 goto:EOF
 
-:checkHosts
-rem back up and show HOSTS file then flush dns
+:checkdns
+echo The CYBER POLICE will display current dns...
+ipconfig /displaydns
+ipconfig /displaydns > %output%/CurrentDNS.txt
+call:colorEcho 0d "Output ends here"
+echo.
+echo The CYBER POLICE will display hosts file
+type C:\Windows\System32\Drivers\etc\hosts
+type C:\Windows\System32\Drivers\etc\hosts > %output%/CurrentHOSTS.txt
+call:colorEcho 0d "Output ends here"
+echo.
+echo The CYBER POLICE will now flush dns...
+ipconfig /flushdns
+call:colorEcho 0a "The CYBER POLICE have flushed dns"
+echo.
+echo The CYBER POLICE will now clear C:\Windows\System32\drivers\etc\hosts...
+attrib -r -s C:\WINDOWS\system32\drivers\etc\hosts
+echo > C:\Windows\System32\drivers\etc\hosts
+attrib +r +s C:\WINDOWS\system32\drivers\etc\hosts
+call:colorEcho 0a "The CYBER POLICE have cleared the HOSTS file"
+echo.
+goto:EOF
 
 :createFile
 %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/CreateFile.ps1" %~1 %~2

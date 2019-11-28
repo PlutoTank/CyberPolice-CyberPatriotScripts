@@ -1,0 +1,9 @@
+# some basic firewall stuff
+Remote Assistance (DCOM-In)
+Remote Assistance (PNRP-In)
+Remote Assistance (RA Server TCP-In)
+Remote Assistance (SSDP TCP-In)
+Remote Assistance (SSDP UDP-In)
+Remote Assistance (TCP-In)
+Telnet Server
+netcat
