@@ -8,7 +8,7 @@ $accounts = Get-Wmiobject Win32_UserAccount -filter 'LocalAccount=TRUE' | select
 
 if (!(Test-Path "$path2/users.txt"))
 {
-   New-Item $path2/users.txt -ItemType file
+   New-Item $path2/users.txt -ItemType file | Out-Null
    Write-Host "Created users.txt file!" -ForegroundColor Yellow
 }
 

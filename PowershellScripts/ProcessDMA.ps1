@@ -7,7 +7,7 @@ $servicesD = @()
 $servicesM = @()
 $servicesA = @()
 
-if (!(Test-path "$path2\Services\ChangedServices.txt")) { New-Item -path $path2\Services\ChangedServices -name ChangedServices.txt -type "file" -Force }
+if (!(Test-path "$path2\Services\ChangedServices.txt")) { New-Item -path $path2\Services\ChangedServices -name ChangedServices.txt -type "file" -Force | Out-Null}
 
 Write-host "Would you like the CYBER POLICE to manage services (Default is No)" -ForegroundColor Yellow 
 $Readhost = Read-Host "[Y/N]" 

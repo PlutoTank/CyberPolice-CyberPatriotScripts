@@ -19,7 +19,7 @@ if(Test-path "$path2\CheckFilesOutput\VerySuspicious\FoundInAppData.txt") {Clear
 Write-host "The CYBER POLICE are checking the $extensions..." -ForegroundColor Cyan
 foreach($ext in $extensions){
 	Write-host "Checking for .$ext files"
-	if(!(Test-path "$path2\CheckFilesOutput\Extentions\$ext.txt")){New-Item -path $path2\CheckFilesOutput\Extentions\$ext.txt -name $ext.txt -type "file"}
+	if(!(Test-path "$path2\CheckFilesOutput\Extentions\$ext.txt")){New-Item -path $path2\CheckFilesOutput\Extentions\$ext.txt -name $ext.txt -type "file" | Out-Null}
     else{Clear-content "$path2\CheckFilesOutput\Extentions\$ext.txt"}
 	C:\Windows\System32\cmd.exe /C dir C:\*.$ext /s /b | Out-File "$path2\CheckFilesOutput\Extentions\$ext.txt"
 
@@ -40,7 +40,7 @@ Write-host "CYBER POLICE are done busting files via extentions" -ForegroundColor
 Write-host "The CYBER POLICE are checking for $tools..." -ForegroundColor Cyan
 foreach($tool in $tools){
 	Write-host "Checking for $tool"
-	if(!(Test-path $path2\CheckFilesOutput\Tools\$tool.txt)){New-Item -path $path2\CheckFilesOutput\Tools\$tool.txt -name $tool.txt -type "file"}
+	if(!(Test-path $path2\CheckFilesOutput\Tools\$tool.txt)){New-Item -path $path2\CheckFilesOutput\Tools\$tool.txt -name $tool.txt -type "file" | Out-Null}
     else{Clear-content "$path2\CheckFilesOutput\Tools\$tool.txt"}
 	C:\Windows\System32\cmd.exe /C dir C:\*$tool* /s /b | Out-File "$path2\CheckFilesOutput\Tools\$tool.txt"
     

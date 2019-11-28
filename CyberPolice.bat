@@ -2,7 +2,7 @@
 
 SETLOCAL EnableDelayedExpansion
 
-set functions=checkfiles usermgmtff userprop services firewall features passwordPol audit lockout rdp power sessions shares checkdns uac backuplsp lsp regharden verifysys
+set functions=checkfiles usermgmtff userprop services firewall features passwordPol audit lockout rdp power sessions shares checkdns uac backuplsp lsp regharden verifysys auto
 
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (
   set "DEL=%%a"
@@ -123,6 +123,9 @@ goto:manual
 if "%~1"=="backuplsp" (
 	goto:EOF	
 )
+if "%~1"=="auto" (
+	goto:EOF	
+)
 call:%~1
 goto:EOF
 :manual
@@ -182,7 +185,7 @@ call:servicesLoop "%wmicPath% process list brief>" "BriefProcesses.txt"
 call:servicesLoop "%wmicPath% process list full>" "FullProcesses.txt"
 call:servicesLoop "%wmicPath% startup list full>" "StartupLists.txt"
 call:servicesLoop "net start>" "StartedProcesses.txt"
-call:servicesLoop "reg export HKLM\Software\Microsoft\Windows\CurrentVersion\Run"  "Run.reg"
+call:servicesLoop "reg export HKLM\Software\Microsoft\Windows\CurrentVersion\Run"  "Run.txt"
 %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/ProcessDMA.ps1"
 call:manualVerify "services.msc"
 goto:EOF
@@ -402,6 +405,7 @@ for /f "tokens=*" %%A in (%configPath%\RegistyHardenData.txt) do (
 		reg add "!regPath!" /v !regKey! /t !regType! /d !regVal! /f
 	)
 )
+call:manualVerify regedit.exe
 goto:EOF
 
 :groupPol
@@ -485,20 +489,14 @@ for /f "tokens=*" %%A in (%output%\users.txt) do (
 )
 echo.
 echo The CYBER POLICE are now applying admins...
-setlocal DisableDelayedExpansion
 for /f "tokens=*" %%A in (%uOutDir%\authAdmins.txt) do (
-	set "line=%%A"
-	setlocal enabledelayedexpansion
+	endlocal & set "line=%%A"
 	for /f "tokens=1 delims= " %%C in ("!line!") do (
-		setlocal DisableDelayedExpansion
-		set "user=%%C"
+		endlocal & set "user=%%C"
 	)
-	setlocal enabledelayedexpansion
 	for /f "tokens=2 delims= " %%C in ("!line!") do (
-		setlocal DisableDelayedExpansion
-		set "pass=%%C"
+		endlocal & set "pass=%%C"
 	)
-	setlocal enabledelayedexpansion
 	call:checkusersadmin !user! !pass!
 )
 echo The CYBER POLICE are now applying users...
@@ -514,14 +512,10 @@ call:manualVerify lusrmgr.msc
 goto:EOF
 
 :checkcurrusers
-setlocal DisableDelayedExpansion
 for /f "tokens=* delims=" %%B in (%uOutDir%\authAdmins.txt) do (
-	set "line=%%B"
-	setlocal enabledelayedexpansion
+	endlocal & set "line=%%B"
 	for /f "tokens=1 delims= " %%C in ("!line!") do (
-		setlocal DisableDelayedExpansion
-		set "userChk=%%C"
-		setlocal enabledelayedexpansion
+		endlocal & set "userChk=%%C"
 		if "%~1"=="!userChk!" (
 			call:colorEcho 0b "%~1"
 			call:colorEcho 0a " found"
@@ -550,10 +544,8 @@ net user %~1 /active:no
 goto:EOF
 
 :checkusersadmin
-setlocal DisableDelayedExpansion
-set "user=%~1"
-set "pass=%~2"
-setlocal enabledelayedexpansion
+endlocal & set "user=%~1"
+endlocal & set "pass=%~2"
 for /f "tokens=*" %%B in (!uOutDir!\enabledUsers.txt) do (
 	if "!user!"=="%%B" (
 		call:colorEcho 0b "!user!"
@@ -596,10 +588,8 @@ echo.
 goto:EOF
 
 :checkusers
-setlocal DisableDelayedExpansion
-set "user=%~1"
-set "pass=%~2"
-setlocal enabledelayedexpansion
+endlocal & set "user=%~1"
+endlocal & set "pass=%~2"
 for /f "tokens=*" %%B in (!uOutDir!\enabledUsers.txt) do (
 	if "!user!"=="%%B" (
 		call:colorEcho 0b "!user!"
@@ -682,8 +672,11 @@ if %rdpChk%==y (
 	reg add "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server\WinStations\RDP-Tcp" /v UserAuthentication /t REG_DWORD /d 1 /f
 	REG ADD "HKLM\SYSTEM\CurrentControlSet\Control\Terminal Server" /v fDenyTSConnections /t REG_DWORD /d 0 /f
 	netsh advfirewall firewall set rule group="remote desktop" new enable=yes
-	echo Please select "Allow connections only from computers running Remote Desktop with Network Level Authentication (more secure)"
-	start SystemPropertiesRemote.exe /wait
+	call:colorEcho 07 "The CYBER POLICE suggest you check"
+	call:colorEcho 0b "Allow connections only from computers running Remote Desktop with Network Level Authentication"
+	echo.
+	call:manualVerify SystemPropertiesRemote.exe
+	pause>nul
 	call:colorEcho 0a "The CYBER POLICE enabled RDP"
 	echo.
 	goto:EOF
@@ -775,6 +768,9 @@ call:colorEcho 0b "Running %~1..."
 echo.
 start %~1 /wait
 echo.
+call:colorEcho 0e "Press any key to let the CYBER POLICE continue..."
+echo.
+pause >nul
 goto:EOF
 
 :colorEcho

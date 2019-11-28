@@ -4,13 +4,11 @@ bwayne (you)
 jgordon
 	password: BaRbr@
 apennyworth
-	password: WayN3$
+	password: gamer
 tdrake
 	password: T1tANsGo!
 bgordon
 	password: password
-Gamer
-	password:
 Authorized Users:
 hbullock
 lfox

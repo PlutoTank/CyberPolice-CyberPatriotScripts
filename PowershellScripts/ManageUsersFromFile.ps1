@@ -101,10 +101,10 @@ function BeginUserManagement {
 if (!(Test-Path $configpath/PasteUsersHere.txt -PathType Leaf)) {
     Write-Host "Raw users from README is not available!" -ForegroundColor Red
     Write-Host "Creating file..." -ForegroundColor Yellow
-    New-Item -Path $configpath/PasteUsersHere.txt -ItemType "file" -Force
+    New-Item -Path $configpath/PasteUsersHere.txt -ItemType "file" -Force | Out-Null
 }
 
 $userMgmtFilePath = "$configpath/PasteUsersHere.txt"
-New-Item -path $output\ManagedUserOutput -name authAdmins.txt -type "file" -Force
-New-Item -path $output\ManagedUserOutput -name authUsers.txt -type "file" -Force
+New-Item -path $output\ManagedUserOutput -name authAdmins.txt -type "file" -Force | Out-Null
+New-Item -path $output\ManagedUserOutput -name authUsers.txt -type "file" -Force | Out-Null
 EditCheck
