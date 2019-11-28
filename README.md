@@ -1,36 +1,36 @@
 # CyberPolice-CyberPatriotScripts
 ### Intro
-This script is for mainly for windows. Runs a bunch of hardening processes. 
-This script is supposed to be used for automation of system hardening.
-This script was made for Cyber Patriot competition but can be used for other uses like system forensics and hardening. 
+This script is for mainly for windows. Runs a bunch of hardening processes.\
+This script is supposed to be used for automation of system hardening.\
+This script was made for Cyber Patriot competition but can be used for other uses like system forensics and hardening.\
 
 ### Useage
 Run `CyberPolice.bat` as Administrator
 
 #### Functions
-```checkfiles```
-```usermgmtff```
-```userprop```
-```services```
-```firewall```
-```features```
-```passwordPol```
-```audit```
-```lockout```
-```rdp```
-```power```
-```sessions```
-```shares```
-```checkdns```
-```uac```
-```backuplsp```
-```lsp```
-```regharden```
-```verifysys```
-```auto```
+```checkfiles```\
+```usermgmtff```\
+```userprop```\
+```services```\
+```firewall```\
+```features```\
+```passwordPol```\
+```audit```\
+```lockout```\
+```rdp```\
+```power```\
+```sessions```\
+```shares```\
+```checkdns```\
+```uac```\
+```backuplsp```\
+```lsp```\
+```regharden```\
+```verifysys```\
+```auto```\
 
 ### Tested OS'
-| Windows Ver   | Tested        | 
+| Windows Version   | Tested        | 
 | ------------- |---------------| 
 | Windows Server 2019 | No | 
 | Windows Server 2016 | Yes |
@@ -45,9 +45,9 @@ Run `CyberPolice.bat` as Administrator
 
 ### Config Files
 
-Some config files allow for commenting with `#` as the first line
-Files that allow for commenting:
-```RegistryHardenData.txt```
-```FirewallRulesOFF```
+Some config files allow for commenting with `#` as the first line\
+Files that allow for commenting:\
+```RegistryHardenData.txt```\
+```FirewallRulesOFF```\
 
 Most config files you just put the name of the object you want to change in the text file that applies to that object
