@@ -1,6 +1,6 @@
 # CyberPolice-CyberPatriotScripts
 ### Intro
-This script is for mainly for windows. This program runs a bunch of hardening processes.\
+This script is for mainly for windows. It runs a bunch of hardening processes.\
 This script is supposed to be used for automation of system hardening.\
 This script was made for Cyber Patriot competition but can be used for other uses like system forensics and hardening.
 
