@@ -1,4 +1,4 @@
-# CyberPolice-CyberPatriotScripts
+# CyberPolice (CyberPatriotScripts)
 ### Intro
 This script is for mainly for windows. It runs a bunch of hardening processes.\
 This script is supposed to be used for automation of system hardening.\
