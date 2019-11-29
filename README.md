@@ -9,7 +9,7 @@ Run `CyberPolice.bat` as Administrator
 
 #### Functions
 ```checkfiles``` (searches for specified extentions and words, outputs all to a log)<br />
-```usermgmtff``` ([how this works](#user)):<br />
+```usermgmtff``` ([how this works](#user))<br />
 ```userprop``` (sets properties for users that is secure, like expiring passwords and change on login)<br />
 ```services``` (logs services on machine, disabled specific services set in `FirewallRulesOFF.txt`)<br />
 ```firewall``` (turns on firewall, disables set firewall rules in `Auto.txt`, `Disabled.txt`, `Manual.txt`)<br />
