@@ -52,7 +52,7 @@ Files that allow for commenting:\
 
 Most config files you just put the name of the object you want to change in the text file that applies to that object\
 
-`RegistyHardenData.txt` Useage\
+`RegistyHardenData.txt` useage\
 To enter a registry change do the following (with ":" included)\
 ```Path:Key:Variable:Value```\
 Example:\
@@ -60,7 +60,7 @@ Example:\
 
 ### <a name="user"></a> User Config
 The `PasteUsersHere.txt` is to be copy and pasted from the Cyber Patriot competition README (or made yourself)\
-Example:\
+Example:
 ```Authorized Administrators:
 bwayne (you)
 	password: !@mBatM@n!
