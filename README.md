@@ -50,7 +50,7 @@ Files that allow for commenting:\
 ```RegistryHardenData.txt```\
 ```FirewallRulesOFF.txt```
 
-Most config files you just put the name of the object you want to change in the text file that applies to that object\
+Most config files you just put the name of the object you want to change in the text file that applies to that object
 
 `RegistyHardenData.txt` useage\
 To enter a registry change do the following (with ":" included)\
