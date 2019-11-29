@@ -1,8 +1,8 @@
 # CyberPolice-CyberPatriotScripts
 ### Intro
-This script is for mainly for windows. Runs a bunch of hardening processes.\
+This script is for mainly for windows. This program runs a bunch of hardening processes.\
 This script is supposed to be used for automation of system hardening.\
-This script was made for Cyber Patriot competition but can be used for other uses like system forensics and hardening.\
+This script was made for Cyber Patriot competition but can be used for other uses like system forensics and hardening.
 
 ### Useage
 Run `CyberPolice.bat` as Administrator
@@ -27,7 +27,7 @@ Run `CyberPolice.bat` as Administrator
 ```lsp``` (sets local security policy based one ones in/put in `ConfigFiles\lgpoTemplates`)\
 ```regharden``` (sets settings in the registy that are specified `RegistyHardenData.txt`)\
 ```verifysys``` (runs `sfc /verifyonly`)\
-```auto``` (runs all functions in logical order)\
+```auto``` (runs all functions in logical order)
 
 ### Tested OS'
 | Windows Version   | Tested        | 
@@ -56,7 +56,7 @@ Most config files you just put the name of the object you want to change in the 
 To enter a registry change do the following (with ":" included)\
 ```Path:Key:Variable:Value```\
 Example:\
-```HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon:AutoAdminLogon:REG_DWORD:0```\
+```HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon:AutoAdminLogon:REG_DWORD:0```
 
 ### <a name="user"></a> User Config
 The `PasteUsersHere.txt` is to be copy and pasted from the Cyber Patriot competition README (or made yourself)\
@@ -80,4 +80,4 @@ hstrange
 jtodd
 twayne
 dwayne
-skyle```\
+skyle```
