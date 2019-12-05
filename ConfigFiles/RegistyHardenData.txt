@@ -18,8 +18,18 @@ HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon:AutoAdminLogon:REG_DW
 HKLM\SYSTEM\CurrentControlSet\Control\Session Manager\Memory Management:ClearPageFileAtShutdown:REG_DWORD:1
 # no printer drivers
 HKLM\SYSTEM\CurrentControlSet\Control\Print\Providers\LanMan Print Services\Servers:AddPrinterDrivers:REG_DWORD:1
-# audit lsass.exe
+# enable LUA
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System:EnableLUA:REG_DWORD:1
+# lsass.exe hardening
 HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options\LSASS.exe:AuditLevel:REG_DWORD:00000008
+# disable bad bad wDigest
+HKLM\SYSTEM\CurrentControlSet\Control\SecurityProviders\WDigest:UseLogonCredential:REG_DWORD:0
+# No DNS
+HKLM\SOFTWARE\Policies\Microsoft\Windows NT\DNSClient:EnableMulticast:REG_DWORD:1
+# No SMB1
+HKLM\SYSTEM\CurrentControlSet\Services\LanmanServer\Parameters:SMB1:REG_DWORD:0
+# UAC
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System:ConsentPromptBehaviorAdmin:REG_DWORD:2
 # LSA protec
 HKLM\SYSTEM\CurrentControlSet\Control\Lsa:RunAsPPL:REG_DWORD:00000001
 # no blank passwords

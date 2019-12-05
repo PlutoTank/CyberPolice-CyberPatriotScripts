@@ -2,7 +2,7 @@
 
 SETLOCAL EnableDelayedExpansion
 
-set functions=checkfiles usermgmtff userprop services firewall features passwordPol audit lockout rdp power sessions shares checkdns uac backuplsp lsp regharden verifysys auto
+set functions=checkfiles usermgmtff userprop services firewall features passwordpol audit lockout rdp power sessions shares checkdns uac windef backuplsp lsp regharden verifysys auto
 
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (
   set "DEL=%%a"
@@ -213,7 +213,14 @@ if %errorlevel%==1 (
 )
 goto:EOF
 
-:passwordPol
+:windef
+echo CYBER POLICE are setting windows defender settings...
+%powershellPath% Set-MpPreference -MAPSReporting Advanced
+%powershellPath% Set-MpPreference -SubmitSamplesConsent Always
+%powershellPath%  Set-MpPreference -EnableNetworkProtection Enabled
+goto:EOF
+
+:passwordpol
 echo The CYBER POLICE are setting a password policy...
 net accounts /lockoutthreshold:5 /MINPWLEN:8 /MAXPWAGE:30 /MINPWAGE:15 /UNIQUEPW:15 
 call:colorEcho 0a "Password policy set!"
@@ -366,6 +373,7 @@ goto:EOF
 :firewall
 echo The CYBER POLICE will now try to enable the firewall...
 netsh advfirewall set allprofiles state on
+netsh advfirewall set publicprofile firewallpolicy blockinboundalways,allowoutbound
 call:colorEcho 0a "The CYBER POLICE have enabled the firewall"
 echo.
 echo The CYBER POLICE will now do some basic firewall hardening...
@@ -463,6 +471,12 @@ for /f "tokens=*" %%A in (%configPath%\BadWinFeatures.txt) do (
 	)
 )
 %dism% /online /Get-Features>%wfOutput%\StatusWFAfter.txt
+echo CYBER POLICE are stopping misc connections...
+net stop WinRM
+%wmicPath% /interactive:off nicconfig where TcpipNetbiosOptions=1 call SetTcpipNetbios 2
+%powershellPath% Disable-WindowsOptionalFeature -Online -FeatureName smb1protocol
+%powershellPath% Disable-WindowsOptionalFeature -Online -FeatureName MicrosoftWindowsPowerShellV2
+%powershellPath% Disable-WindowsOptionalFeature -Online -FeatureName MicrosoftWindowsPowerShellV2Root
 call:colorEcho 0a "CYBER POLICE are done finding bad Windows features"
 echo.
 goto:EOF
