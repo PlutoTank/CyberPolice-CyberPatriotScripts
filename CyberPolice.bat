@@ -2,7 +2,8 @@
 
 SETLOCAL EnableDelayedExpansion
 
-set functions=checkfiles usermgmtff userprop services firewall features passwordpol audit lockout rdp power sessions shares checkdns uac windef backuplsp lsp regharden verifysys auto
+set functions=checkfiles usermgmtff userprop services firewall features passwordpol audit lockout rdp power sessions shares checkdns uac windef backuplsp lsp regharden verifysys auto logging
+set analysisFunctions=allgpo listgpos listdisabledgpos gpoinfo gporeport backupgpos logfirewall logservices netstat checksync manual
 
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (
   set "DEL=%%a"
@@ -14,6 +15,7 @@ set path=%~dp0
 if not exist "%path%CyberPoliceOutput" mkdir "%path%CyberPoliceOutput"
 set output=%path%CyberPoliceOutput
 set powershellScriptPath=%path%PowershellScripts
+set vbScriptPath=%path%VBScripts
 set configPath=%path%ConfigFiles
 set toolsPath=%path%Tools
 set batchScripts=%path%BatchScripts
@@ -33,6 +35,9 @@ for /f "tokens=*" %%A in (%configPath%\DefaultPassword.txt) do (
 
 echo CYBER POLICE are making required directories...
 if not exist "%output%\WindowsFeatures" mkdir "%output%\WindowsFeatures"
+if not exist "%output%\gpoInfo" mkdir "%output%\gpoInfo"
+if not exist "%output%\gpoInfo\gpoReports" mkdir "%output%\gpoInfo\gpoReports"
+if not exist "%output%\logs" mkdir "%output%\logs"
 
 set lspEditOs = "Windows10"
 
@@ -92,6 +97,9 @@ echo Powershell installed: true Version: %PowerShellVersion% > %output%\Powershe
 cecho {0a}Powershell is installed!!{#}
 echo.
 echo.
+cecho Note: If you plan on using the Logging function you need {0b}cscript.exe{#}!
+echo.
+echo.
 
 for /f "delims=: tokens=2" %%a in ('systeminfo ^| find "OS Name"') do set os=%%a
 for /f "tokens=* delims= " %%a in ("%os%") do set os=%%a
@@ -104,6 +112,12 @@ set proArc=%proArc:~23%
 cecho {0b}The CYBER POLICE have detected {0d}%proArc% {0b}as host's CPU architecture{#}
 echo.
 echo %proArc%>%output%\"CPUARCHITECTURE.txt"
+
+for /f "delims=: tokens=2" %%a in ('systeminfo ^| find "Domain:"') do set domain=%%a
+for /f "tokens=* delims= " %%a in ("%domain%") do set domain=%%a
+cecho {0b}The CYBER POLICE have detected {0d}%domain% {0b}as host's domain{#}
+echo.
+echo %domain%>%output%\"Domain.txt"
 
 cecho {0b}Running as user {0a}%you%{#}
 echo.
@@ -122,11 +136,12 @@ echo Press any key to begin CYBER POLICE OPS...
 pause>nul
 
 echo.
-cecho {0e}Do you want [A]uto or [M]anual (Default is [M]anual){#}
+cecho {0e}Do you want [{0a}A{0e}]uto, [{0b}M{0e}]anual or [{0d}L{0e}]ogging/Analysis (Default is [{0b}M{0e}]anual){#}
 echo.
-set /p aus="[A/M]: "
-if /i "%aus%" neq "A" goto:manual
-goto:auto
+set /p aus="[A/M/L]: "
+if /i "%aus%"=="L" goto:logging
+if /i "%aus%"=="A" goto:auto
+goto:manual
 
 :auto
 for %%A in (%functions%) do call:autoCheck %%A
@@ -145,6 +160,7 @@ if "%~1"=="auto" (
 )
 call:%~1
 goto:EOF
+
 :manual
 
 echo.
@@ -178,6 +194,38 @@ echo.
 :endOfManual
 pause>nul
 goto:manual
+
+:logging
+echo.
+cecho {07}Type {0b}exit {07}to {0c}exit {07}and {0b}help {07}for {0a}help{#} [analysis mode]
+echo.
+set /p act="What should the CYBER POLICE [Covert Ops] check: "
+if "%act%"=="exit" exit
+if "%act%"=="help" (
+	echo CYBER POLICE [Covert Ops] available actions:
+	for %%F in (%analysisFunctions%) do (
+		cecho {0d}%%F{#}
+		echo.
+	)
+	pause>nul
+	goto:logging
+)
+for %%F in (%analysisFunctions%) do (
+	if %%F==%act% (
+		cecho {0a}CYBER POLICE [Covert Ops] are executing {0b}%act%{#}
+		echo.
+		echo.
+		call:%act%
+		cecho {0a}CYBER POLICE [Covert Ops] have finished executing {0b}%act%{#}
+		echo.
+		goto:endOfLogging
+	)
+)
+cecho {0c}CYBER POLICE [Covert Ops] could not find {0b}%act% {0c}operation!{#}
+echo.
+:endOfLogging
+pause>nul
+goto:logging
 
 :checkfiles
 %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/MakeCheckFileDirectories.ps1"
@@ -728,6 +776,77 @@ echo > C:\Windows\System32\drivers\etc\hosts
 attrib +r +s C:\WINDOWS\system32\drivers\etc\hosts
 cecho {0a}The CYBER POLICE have cleared the HOSTS file{#}
 echo.
+goto:EOF
+
+:allgpo
+%powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/AllGPOs.ps1"
+goto:EOF
+
+:backupgpos
+if not exist "%output%\gpoBackups" mkdir "%output%\gpoBackups"
+cscript.exe %vbScriptPath%\BackupAllGPOs.wsf %output%\gpoBackups /Comment:"Cyber Police Backup" /Domain:%domain%
+goto:EOF
+
+:listgpos
+cscript.exe %vbScriptPath%\ListAllGPOs.wsf > %output%\gpoInfo\GposInfoNameAndIDs.txt
+cscript.exe %vbScriptPath%\ListAllGPOs.wsf /v > %output%\gpoInfo\GposInfoNameAndIDsVerbose.txt
+cecho If you want to delete a GPO run {0a}Remove-GPO -Name {0b}[name]{#} in powershell{#}
+echo.
+echo. 2>%output%\gpoInfo\Gpos.txt
+echo GPOs in this domain:
+for /f "tokens=* delims=" %%i in (%output%\gpoInfo\GposInfoNameAndIDs.txt) do (
+	echo.%%i|findstr /C:"Name:" >nul 2>&1
+	if not errorlevel 1 (
+		for /f "delims=: tokens=2" %%j in ('echo %%i') do set gponame=%%j
+		set gponame=!gponame:~1!
+		cecho {0b}!gponame!{#}
+		echo.
+		echo !gponame! >> %output%\gpoInfo\Gpos.txt
+	)
+)
+echo.
+goto:EOF
+
+:listdisabledgpos
+cscript.exe %vbScriptPath%\FindDisabledGPOs.wsf 
+goto:EOF
+
+:gpoinfo
+echo Getting all GPOS...
+call:listgpos
+for /f "tokens=* delims=" %%a in (%output%\gpoInfo\Gpos.txt) do (
+	set currgpo=%%a
+	set currgpo=!currgpo:~0,-1!
+	cecho {0d}Getting {0b}!currgpo!{0d} info{#}
+	echo. 
+  	cscript.exe %vbScriptPath%\DumpGPOInfo.wsf "!currgpo!" 
+	cecho {0d}End of {0b}!currgpo!{0d} info...{#}
+	echo.
+)
+goto:EOF
+
+:gporeport
+rem %powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/GPOReport.ps1"
+cscript.exe %vbScriptPath%\GetReportsForAllGPOs.wsf %output%\gpoInfo\gpoReports
+goto:EOF
+
+:logfirewall
+%powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/LogFirewall.ps1"
+netsh advfirewall export "%output%\logs\fwBackup.wfw"
+goto:EOF
+
+:logservices
+%powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/LogServices.ps1"
+goto:EOF
+
+:netstat
+netstat -abno 
+netstat -abno > %output%\logs\netstatlog.txt
+goto:EOF
+
+:checksync
+dcdiag /q
+dcdiag /q > %output%\logs\synclog.txt
 goto:EOF
 
 :createFile
