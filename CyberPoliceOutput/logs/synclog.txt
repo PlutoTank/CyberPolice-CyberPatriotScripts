@@ -1,92 +1,0 @@
-         There are warning or error events within the last 24 hours after the
-         SYSVOL has been shared.  Failing SYSVOL replication problems may cause
-         Group Policy problems. 
-         ......................... SRV2016 failed test DFSREvent
-         [SRV2016] User credentials does not have permission to perform this
-         operation.
-         The account used for this test must have network logon privileges
-         for this machine's domain.
-         ......................... SRV2016 failed test NetLogons
-         [Replications Check,SRV2016] DsReplicaGetInfo(PENDING_OPS, NULL)
-         failed, error 0x2105 "Replication access was denied."
-         ......................... SRV2016 failed test Replications
-            Could not open NTDS Service on SRV2016, error 0x5
-            "Access is denied."
-         ......................... SRV2016 failed test Services
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:02:57
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:05:14
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:06:30
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:07:20
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:08:32
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:10:00
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:15:50
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:18:04
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:19:23
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:23:28
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:24:19
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:31:27
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:35:06
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:41:21
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:43:37
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:47:53
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:49:57
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:56:20
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         An error event occurred.  EventID: 0x00002720
-            Time Generated: 06/05/2020   23:59:36
-            Event String:
-            The application-specific permission settings do not grant Local Activation permission for the COM Server application with CLSID 
-         ......................... SRV2016 failed test SystemLog
