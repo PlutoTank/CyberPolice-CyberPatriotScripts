@@ -12,8 +12,25 @@ if (!(Test-Path "$path2/users.txt"))
    Write-Host "Created users.txt file!" -ForegroundColor Yellow
 }
 
+Write-host "Are you on an AD (Default is No)" -ForegroundColor Yellow 
+$Readhost = Read-Host "[Y/N]" 
+Switch ($ReadHost) { 
+  Y {
+   if (!(Test-Path "$path2/usersAD.txt"))
+   {
+      New-Item $path2/usersAD.txt -ItemType file | Out-Null
+      Write-Host "Created usersAD.txt file!" -ForegroundColor Yellow
+   }
+   Get-ADUser -Filter *  | Out-File -FilePath $path2/usersAD.txt
+   Write-Host "AD Users added to text file!" -ForegroundColor Yellow;
+  } 
+  N { Write-Host "Ok." -ForegroundColor Gray } 
+  Default { Write-Host "Ok." -ForegroundColor Gray } 
+} 
+
 Clear-content "$path2\users.txt"
 foreach($l in $accounts){
    Add-Content -Path $path2\users.txt -Value $l -PassThru
 }
+
 Write-Host "Users added to text file!" -ForegroundColor Yellow;
