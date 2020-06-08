@@ -21,8 +21,15 @@ Switch ($ReadHost) {
       New-Item $path2/usersAD.txt -ItemType file | Out-Null
       Write-Host "Created usersAD.txt file!" -ForegroundColor Yellow
    }
+   if (!(Test-Path "$path2/ADConnectedComputers.txt"))
+   {
+      New-Item $path2/ADConnectedComputers.txt -ItemType file | Out-Null
+      Write-Host "Created ADConnectedComputers.txt file!" -ForegroundColor Yellow
+   }
+   Get-ADComputer -Filter * -Properties ipv4Address, OperatingSystem, OperatingSystemServicePack | Format-List name, ipv4*, oper* | Out-File -FilePath $path2/ADConnectedComputers.txt
+   Write-Host "[AD] Connected Computers added to text file!" -ForegroundColor Yellow;
    Get-ADUser -Filter *  | Out-File -FilePath $path2/usersAD.txt
-   Write-Host "AD Users added to text file!" -ForegroundColor Yellow;
+   Write-Host "[AD] Users added to text file!" -ForegroundColor Yellow;
   } 
   N { Write-Host "Ok." -ForegroundColor Gray } 
   Default { Write-Host "Ok." -ForegroundColor Gray } 

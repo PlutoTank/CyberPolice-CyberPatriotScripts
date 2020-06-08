@@ -3,7 +3,7 @@
 SETLOCAL EnableDelayedExpansion
 
 set functions=checkfiles usermgmtff userprop services firewall features passwordpol audit lockout rdp power sessions shares checkdns uac windef backuplsp lsp regharden verifysys auto logging
-set analysisFunctions=allgpo listgpos listdisabledgpos gpoinfo gporeport backupgpos logfirewall logservices logusers netstat checksync manual
+set analysisFunctions=allgpo listgpos listdisabledgpos gpoinfo gporeport backupgpos logfirewall logservices logusers netstat backupeventlogs checksync manual
 
 for /F "tokens=1,2 delims=#" %%a in ('"prompt #$H#$E# & echo on & for %%b in (1) do rem"') do (
   set "DEL=%%a"
@@ -852,6 +852,10 @@ goto:EOF
 :logusers
 net user
 net user > %output%\logs\userlog.txt
+goto:EOF
+
+:backupeventlogs
+%powershellPath% -ExecutionPolicy Bypass -File "%powershellScriptPath%/SaveEventLogs.ps1"
 goto:EOF
 
 :createFile
